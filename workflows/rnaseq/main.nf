@@ -7,10 +7,12 @@
 //
 // MODULE: Loaded from modules/local/
 //
+include { SCALE_FACTORS } from '../../modules/local/scale_factors'
 include { DESEQ2_QC as DESEQ2_QC_STAR_SALMON } from '../../modules/local/deseq2_qc'
 include { DESEQ2_QC as DESEQ2_QC_RSEM        } from '../../modules/local/deseq2_qc'
 include { DESEQ2_QC as DESEQ2_QC_PSEUDO      } from '../../modules/local/deseq2_qc'
 include { MULTIQC_CUSTOM_BIOTYPE             } from '../../modules/local/multiqc_custom_biotype'
+include { GUNZIP as GUNZIP_ADDITIONAL_FASTA  } from '../../modules/nf-core/gunzip'
 
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
@@ -438,6 +440,27 @@ workflow RNASEQ {
             ch_genome_bam_index = BAM_MARKDUPLICATES_PICARD.out.csi
         }
         ch_versions = ch_versions.mix(BAM_MARKDUPLICATES_PICARD.out.versions)
+    }
+
+    //
+    // MODULE: Count reads for main genome and spike genome
+    //
+    if (!params.skip_alignment) {
+        ch_spike_genome = Channel.empty()
+        if (params.additional_fasta) {
+            additional_fasta = params.additional_fasta
+            if (additional_fasta.endsWith('.gz')) {
+                ch_spike_genome = GUNZIP_ADDITIONAL_FASTA([ [:], file(additional_fasta, checkIfExists: true) ]).gunzip.map { it[1] }
+            } else {
+                ch_spike_genome = Channel.value(file(additional_fasta, checkIfExists: true))
+            }
+        }
+        SCALE_FACTORS (
+            ch_genome_bam.join(ch_genome_bam_index, by: [0]).collect(flat:false).map{it.transpose()},
+            ch_spike_genome.map { [ [:], it ] },
+        )
+        ch_scale_factors = SCALE_FACTORS.out.scale_factors
+        ch_versions = ch_versions.mix(SCALE_FACTORS.out.versions)
     }
 
     //
