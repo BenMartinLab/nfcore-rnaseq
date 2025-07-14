@@ -12,7 +12,7 @@ process SCALE_FACTORS {
 
     output:
     path "scale_factors.txt", emit: scale_factors
-    path "versions.yml"   , emit: versions
+    path "versions.yml"     , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
