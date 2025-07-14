@@ -1,0 +1,51 @@
+nextflow_process {
+
+    name "Test Process READ_SCALE_FACTOR"
+    script "../main.nf"
+    process "READ_SCALE_FACTOR"
+
+    test("read scale factor correctly") {
+
+        when {
+            process {
+                """
+                input[0] = file(params.modules_testdata_base_path + 'generic/tsv/expression.tsv', checkIfExists: true)
+                input[1] = "S17"
+                input[2] = "G03"
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(
+                    process.out.scale_factor,
+                    process.out.versions
+                ).match() }
+            )
+        }
+    }
+
+    test("writes scale factors correctly - stub") {
+
+    options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = file(params.modules_testdata_base_path + 'generic/tsv/expression.tsv', checkIfExists: true)
+                input[1] = "S17"
+                input[2] = "G03"
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+}
