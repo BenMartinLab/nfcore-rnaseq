@@ -46,10 +46,10 @@ def scale_factors(bam_files: list[TextIO], output_file: TextIO, spike_fasta_file
     spike_chromosomes = parse_chromosomes(spike_fasta_file) if spike_fasta_file else None
 
     # Header
-    output_file.write(f"BAM\tMain genome reads count\tScale factors - {scale:.2e} / main genome reads count")
+    output_file.write(f"BAM\tMain genome reads count\tSequencing depth scale factors - {scale:.2e} / main genome reads count")
     if spike_fasta_file:
         output_file.write(f"\tSpike-in reads count\tSpike-in scale factors - {scale:.2e} / spike-in reads count"
-                          f"\tTotal size scale factors - {scale:.2e} / (spike-in * main genome)")
+                          f"\tSpike-in with sequencing depth scale factors - {scale:.2e} / (spike-in * main genome)")
     output_file.write("\n")
 
     for i in range(0, len(bam_files)):
