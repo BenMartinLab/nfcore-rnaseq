@@ -582,6 +582,39 @@ workflow RNASEQ {
             BEDTOOLS_GENOMECOV_SCALED_REV.out.genomecov,
             ch_chrom_sizes
         )
+        if (params.additional_fasta) {
+            // Genome-wide coverage scaled to the number of reads on spike-in genome.
+            ch_read_scale_factor_input = ch_genome_bam.combine(ch_scale_factors)
+                    .map { meta, bam, scale_factors -> [ meta, scale_factors, meta.id, 4 ] }
+            READ_SCALE_FACTOR_SPIKE (
+                ch_read_scale_factor_input
+            )
+            ch_read_scale_factor = READ_SCALE_FACTOR_SPIKE.out.scale_factor
+            ch_read_scale_factor = ch_read_scale_factor.map { meta, scale -> [ meta, scale as double ] }
+            ch_genomecov_input = ch_genome_bam.combine(ch_read_scale_factor, by: 0)
+            BEDTOOLS_GENOMECOV_SPIKE_FW (
+                ch_genomecov_input,
+                [],
+                'bedGraph',
+                true
+            )
+            BEDTOOLS_GENOMECOV_SPIKE_REV (
+                ch_genomecov_input,
+                [],
+                'bedGraph',
+                true
+            )
+            ch_versions = ch_versions.mix(BEDTOOLS_GENOMECOV_SPIKE_FW.out.versions.first())
+            BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SPIKE_FORWARD (
+                BEDTOOLS_GENOMECOV_SPIKE_FW.out.genomecov,
+                ch_chrom_sizes
+            )
+            ch_versions = ch_versions.mix(BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SPIKE_FORWARD.out.versions)
+            BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SPIKE_REVERSE (
+                BEDTOOLS_GENOMECOV_SPIKE_REV.out.genomecov,
+                ch_chrom_sizes
+            )
+        }
     }
 
     //
