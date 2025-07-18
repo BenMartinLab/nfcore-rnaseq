@@ -8,7 +8,7 @@ from typing import TextIO, Iterator
 import pysam
 
 
-BASE_SCALE = 10000000
+BASE_SCALE = 1000000
 
 
 def main(argv: list[str] = None):
