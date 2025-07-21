@@ -1,4 +1,5 @@
 process READ_SCALE_FACTOR {
+    tag "$meta.id"
     label "process_single"
 
     conda "${moduleDir}/environment.yml"

@@ -1,0 +1,53 @@
+nextflow_process {
+
+    name "Test Process NEGATE_BEDGRAPH_SCORE"
+    script "../main.nf"
+    process "NEGATE_BEDGRAPH_SCORE"
+
+    test("writes negated bedGraph correctly") {
+
+        when {
+            process {
+                """
+                input[0] = Channel.of([
+                    [ id:'test', single_end: false ] // meta map
+                ])
+                input[1] = file(params.modules_testdata_base_path + 'genomics/homo_sapiens/illumina/bedgraph/cutandtag_igg_test_1.bedGraph', checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(
+                    process.out.bedgraph,
+                    process.out.versions
+                ).match() }
+            )
+        }
+    }
+
+    test("writes negated bedGraph correctly - stub") {
+
+    options "-stub"
+
+        when {
+            process {
+                """
+                input[0] = Channel.of([
+                    [ id:'test', single_end: false ] // meta map
+                ])
+                input[1] = file(params.modules_testdata_base_path + 'genomics/homo_sapiens/illumina/bedgraph/cutandtag_igg_test_1.bedGraph', checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+}

@@ -10,6 +10,9 @@
 include { DESEQ2_QC as DESEQ2_QC_STAR_SALMON } from '../../modules/local/deseq2_qc'
 include { DESEQ2_QC as DESEQ2_QC_RSEM        } from '../../modules/local/deseq2_qc'
 include { DESEQ2_QC as DESEQ2_QC_PSEUDO      } from '../../modules/local/deseq2_qc'
+include { NEGATE_BEDGRAPH_SCORE as NEGATE_BEDGRAPH_SCORE_REV } from '../../modules/local/negate_bedgraph_score'
+include { NEGATE_BEDGRAPH_SCORE as NEGATE_BEDGRAPH_SCORE_SPIKE_REV } from '../../modules/local/negate_bedgraph_score'
+include { NEGATE_BEDGRAPH_SCORE as NEGATE_BEDGRAPH_SCORE_SPIKE_MAIN_REV } from '../../modules/local/negate_bedgraph_score'
 include { MULTIQC_CUSTOM_BIOTYPE             } from '../../modules/local/multiqc_custom_biotype'
 include { READ_SCALE_FACTOR                  } from '../../modules/local/read_scale_factor'
 include { READ_SCALE_FACTOR as READ_SCALE_FACTOR_SPIKE } from '../../modules/local/read_scale_factor'
@@ -578,13 +581,17 @@ workflow RNASEQ {
             true
         )
         ch_versions = ch_versions.mix(BEDTOOLS_GENOMECOV_SCALED_FW.out.versions.first())
+        NEGATE_BEDGRAPH_SCORE_REV {
+            BEDTOOLS_GENOMECOV_SCALED_REV.out.genomecov
+        }
+        ch_versions = ch_versions.mix(NEGATE_BEDGRAPH_SCORE_REV.out.versions)
         BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SCALED_FORWARD (
             BEDTOOLS_GENOMECOV_SCALED_FW.out.genomecov,
             ch_chrom_sizes
         )
         ch_versions = ch_versions.mix(BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SCALED_FORWARD.out.versions)
         BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SCALED_REVERSE (
-            BEDTOOLS_GENOMECOV_SCALED_REV.out.genomecov,
+            NEGATE_BEDGRAPH_SCORE_REV.out.bedgraph,
             ch_chrom_sizes
         )
 
@@ -611,13 +618,17 @@ workflow RNASEQ {
                 true
             )
             ch_versions = ch_versions.mix(BEDTOOLS_GENOMECOV_SPIKE_FW.out.versions.first())
+            NEGATE_BEDGRAPH_SCORE_SPIKE_REV {
+                BEDTOOLS_GENOMECOV_SPIKE_REV.out.genomecov
+            }
+            ch_versions = ch_versions.mix(NEGATE_BEDGRAPH_SCORE_SPIKE_REV.out.versions)
             BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SPIKE_FORWARD (
                 BEDTOOLS_GENOMECOV_SPIKE_FW.out.genomecov,
                 ch_chrom_sizes
             )
             ch_versions = ch_versions.mix(BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SPIKE_FORWARD.out.versions)
             BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SPIKE_REVERSE (
-                BEDTOOLS_GENOMECOV_SPIKE_REV.out.genomecov,
+                NEGATE_BEDGRAPH_SCORE_SPIKE_REV.out.bedgraph,
                 ch_chrom_sizes
             )
 
@@ -643,13 +654,17 @@ workflow RNASEQ {
                 true
             )
             ch_versions = ch_versions.mix(BEDTOOLS_GENOMECOV_SPIKE_MAIN_FW.out.versions.first())
+            NEGATE_BEDGRAPH_SCORE_SPIKE_MAIN_REV {
+                BEDTOOLS_GENOMECOV_SPIKE_MAIN_REV.out.genomecov
+            }
+            ch_versions = ch_versions.mix(NEGATE_BEDGRAPH_SCORE_SPIKE_MAIN_REV.out.versions)
             BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SPIKE_MAIN_FORWARD (
                 BEDTOOLS_GENOMECOV_SPIKE_MAIN_FW.out.genomecov,
                 ch_chrom_sizes
             )
             ch_versions = ch_versions.mix(BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SPIKE_MAIN_FORWARD.out.versions)
             BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SPIKE_MAIN_REVERSE (
-                BEDTOOLS_GENOMECOV_SPIKE_MAIN_REV.out.genomecov,
+                NEGATE_BEDGRAPH_SCORE_SPIKE_MAIN_REV.out.bedgraph,
                 ch_chrom_sizes
             )
         }
