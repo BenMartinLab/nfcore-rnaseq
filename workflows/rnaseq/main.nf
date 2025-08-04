@@ -12,11 +12,9 @@ include { DESEQ2_QC as DESEQ2_QC_RSEM        } from '../../modules/local/deseq2_
 include { DESEQ2_QC as DESEQ2_QC_PSEUDO      } from '../../modules/local/deseq2_qc'
 include { NEGATE_BEDGRAPH_SCORE as NEGATE_BEDGRAPH_SCORE_REV } from '../../modules/local/negate_bedgraph_score'
 include { NEGATE_BEDGRAPH_SCORE as NEGATE_BEDGRAPH_SCORE_SPIKE_REV } from '../../modules/local/negate_bedgraph_score'
-include { NEGATE_BEDGRAPH_SCORE as NEGATE_BEDGRAPH_SCORE_SPIKE_MAIN_REV } from '../../modules/local/negate_bedgraph_score'
 include { MULTIQC_CUSTOM_BIOTYPE             } from '../../modules/local/multiqc_custom_biotype'
 include { READ_SCALE_FACTOR                  } from '../../modules/local/read_scale_factor'
 include { READ_SCALE_FACTOR as READ_SCALE_FACTOR_SPIKE } from '../../modules/local/read_scale_factor'
-include { READ_SCALE_FACTOR as READ_SCALE_FACTOR_SPIKE_MAIN } from '../../modules/local/read_scale_factor'
 include { SCALE_FACTORS                      } from '../../modules/local/scale_factors'
 include { GUNZIP as GUNZIP_ADDITIONAL_FASTA  } from '../../modules/nf-core/gunzip'
 
@@ -58,8 +56,6 @@ include { BEDTOOLS_GENOMECOV as BEDTOOLS_GENOMECOV_SCALED_FW   } from '../../mod
 include { BEDTOOLS_GENOMECOV as BEDTOOLS_GENOMECOV_SCALED_REV  } from '../../modules/nf-core/bedtools/genomecov'
 include { BEDTOOLS_GENOMECOV as BEDTOOLS_GENOMECOV_SPIKE_FW    } from '../../modules/nf-core/bedtools/genomecov'
 include { BEDTOOLS_GENOMECOV as BEDTOOLS_GENOMECOV_SPIKE_REV   } from '../../modules/nf-core/bedtools/genomecov'
-include { BEDTOOLS_GENOMECOV as BEDTOOLS_GENOMECOV_SPIKE_MAIN_FW    } from '../../modules/nf-core/bedtools/genomecov'
-include { BEDTOOLS_GENOMECOV as BEDTOOLS_GENOMECOV_SPIKE_MAIN_REV   } from '../../modules/nf-core/bedtools/genomecov'
 
 //
 // SUBWORKFLOW: Consisting entirely of nf-core/modules
@@ -77,8 +73,6 @@ include { BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG as BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG
 include { BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG as BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SCALED_REVERSE } from '../../subworkflows/nf-core/bedgraph_bedclip_bedgraphtobigwig'
 include { BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG as BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SPIKE_FORWARD } from '../../subworkflows/nf-core/bedgraph_bedclip_bedgraphtobigwig'
 include { BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG as BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SPIKE_REVERSE } from '../../subworkflows/nf-core/bedgraph_bedclip_bedgraphtobigwig'
-include { BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG as BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SPIKE_MAIN_FORWARD } from '../../subworkflows/nf-core/bedgraph_bedclip_bedgraphtobigwig'
-include { BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG as BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SPIKE_MAIN_REVERSE } from '../../subworkflows/nf-core/bedgraph_bedclip_bedgraphtobigwig'
 include { QUANTIFY_PSEUDO_ALIGNMENT as QUANTIFY_STAR_SALMON } from '../../subworkflows/nf-core/quantify_pseudo_alignment'
 include { QUANTIFY_PSEUDO_ALIGNMENT                         } from '../../subworkflows/nf-core/quantify_pseudo_alignment'
 include { FASTQ_QC_TRIM_FILTER_SETSTRANDEDNESS              } from '../../subworkflows/nf-core/fastq_qc_trim_filter_setstrandedness'
@@ -594,7 +588,6 @@ workflow RNASEQ {
             NEGATE_BEDGRAPH_SCORE_REV.out.bedgraph,
             ch_chrom_sizes
         )
-
         if (params.additional_fasta) {
             // Genome-wide coverage scaled to the number of reads on spike-in genome.
             ch_read_scale_factor_input = ch_genome_bam.combine(ch_scale_factors)
@@ -629,42 +622,6 @@ workflow RNASEQ {
             ch_versions = ch_versions.mix(BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SPIKE_FORWARD.out.versions)
             BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SPIKE_REVERSE (
                 NEGATE_BEDGRAPH_SCORE_SPIKE_REV.out.bedgraph,
-                ch_chrom_sizes
-            )
-
-            // Genome-wide coverage scaled to the number of reads on spike-in genome and main genome.
-            ch_read_scale_factor_input = ch_genome_bam.combine(ch_scale_factors)
-                    .map { meta, bam, scale_factors -> [ meta, scale_factors, meta.id, 5 ] }
-            READ_SCALE_FACTOR_SPIKE_MAIN (
-                ch_read_scale_factor_input
-            )
-            ch_read_scale_factor = READ_SCALE_FACTOR_SPIKE_MAIN.out.scale_factor
-            ch_read_scale_factor = ch_read_scale_factor.map { meta, scale -> [ meta, scale as double ] }
-            ch_genomecov_input = ch_genome_bam.combine(ch_read_scale_factor, by: 0)
-            BEDTOOLS_GENOMECOV_SPIKE_MAIN_FW (
-                ch_genomecov_input,
-                [],
-                'bedGraph',
-                true
-            )
-            BEDTOOLS_GENOMECOV_SPIKE_MAIN_REV (
-                ch_genomecov_input,
-                [],
-                'bedGraph',
-                true
-            )
-            ch_versions = ch_versions.mix(BEDTOOLS_GENOMECOV_SPIKE_MAIN_FW.out.versions.first())
-            NEGATE_BEDGRAPH_SCORE_SPIKE_MAIN_REV {
-                BEDTOOLS_GENOMECOV_SPIKE_MAIN_REV.out.genomecov
-            }
-            ch_versions = ch_versions.mix(NEGATE_BEDGRAPH_SCORE_SPIKE_MAIN_REV.out.versions)
-            BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SPIKE_MAIN_FORWARD (
-                BEDTOOLS_GENOMECOV_SPIKE_MAIN_FW.out.genomecov,
-                ch_chrom_sizes
-            )
-            ch_versions = ch_versions.mix(BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SPIKE_MAIN_FORWARD.out.versions)
-            BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_SPIKE_MAIN_REVERSE (
-                NEGATE_BEDGRAPH_SCORE_SPIKE_MAIN_REV.out.bedgraph,
                 ch_chrom_sizes
             )
         }
