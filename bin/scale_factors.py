@@ -49,7 +49,7 @@ def scale_factors(bam_files: list[TextIO], output_file: TextIO, spike_fasta_file
     output_file.write(f"BAM\tMain genome reads count\tSequencing depth scale factors - {scale:.2e} / main genome reads count")
     if spike_fasta_file:
         output_file.write(f"\tSpike-in reads count\tSpike-in scale factors - {scale:.2e} / spike-in reads count"
-                          f"\tSpike-in with sequencing depth scale factors - {scale:.2e} / (spike-in * main genome)")
+                          f"\tSpike-in reads percentage")
     output_file.write("\n")
 
     for i in range(0, len(bam_files)):
@@ -69,7 +69,7 @@ def scale_factors(bam_files: list[TextIO], output_file: TextIO, spike_fasta_file
         output_file.write(f"{label}\t{read_count}\t{scale/read_count if read_count else 'NA'}")
         if spike_fasta_file:
             output_file.write(f"\t{spike_read_count}\t{scale/spike_read_count if spike_read_count else 'NA'}"
-                              f"\t{scale/(spike_read_count*read_count) if spike_read_count and read_count else 'NA'}")
+                              f"\t{spike_read_count/(spike_read_count+read_count) if spike_read_count and read_count else 'NA'}")
         output_file.write("\n")
 
 
