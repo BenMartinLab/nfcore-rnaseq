@@ -3,6 +3,16 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+# 3.19.0_spikein - 2025-07-25
+
+### Credits
+
+- [Christian Poitras](https://github.com/christianpoitras)
+
+### Enhancements & fixes
+
+- [PR #1481](https://github.com/BenMartinLab/nfcore-rnaseq/pull/1481) - Add spike-in scale factors and bigWigs
+
 # 3.19.0 - 2025-06-06
 
 ### Credits

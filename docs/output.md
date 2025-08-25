@@ -370,10 +370,26 @@ Unless you are using [UMIs](https://emea.illumina.com/science/sequencing-method-
 - `<ALIGNER>/bigwig/`
   - `*.forward.bigWig`: bigWig coverage file relative to genes on the forward DNA strand.
   - `*.reverse.bigWig`: bigWig coverage file relative to genes on the reverse DNA strand.
+  - `*.depth_scaled.forward.bigWig`: bigWig coverage file relative to genes on the forward DNA strand scaled to sequencing depth.
+  - `*.depth_scaled.reverse.bigWig`: bigWig coverage file relative to genes on the reverse DNA strand scaled to sequencing depth.
+  - `*.spike_scaled.forward.bigWig`: bigWig coverage file relative to genes on the forward DNA strand scaled using spike-in genome.
+  - `*.spike_scaled.reverse.bigWig`: bigWig coverage file relative to genes on the reverse DNA strand scaled using spike-in genome.
 
 </details>
 
 The [bigWig](https://genome.ucsc.edu/goldenpath/help/bigWig.html) format is an indexed binary format useful for displaying dense, continuous data in Genome Browsers such as the [UCSC](https://genome.ucsc.edu/cgi-bin/hgTracks) and [IGV](http://software.broadinstitute.org/software/igv/). This mitigates the need to load the much larger BAM files for data visualisation purposes which will be slower and result in memory issues. The bigWig format is also supported by various bioinformatics software for downstream processing such as meta-profile plotting.
+
+### Scale factors
+
+<details markdown="1">
+<summary>Output files</summary>
+
+- `<ALIGNER>/`:
+  - `scale_factors.txt`: scale factors used when creating bigWig files.
+
+</details>
+
+Text file containing number of reads mapped to main and spike-in genomes in addition to scale factors used to scale bigWig files.
 
 ## Quality control
 
