@@ -1,3 +1,7 @@
+## Alliance Canada documentation
+
+[See alliance_canada directory](alliance_canada/README.md)
+
 ## Fork information
 
 This fork was made to add the following functionalities to the RNA-seq pipeline:
