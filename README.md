@@ -1,12 +1,3 @@
-## Fork information
-
-This fork was made to add the following functionalities to the RNA-seq pipeline:
-1. Create a file containing the number of reads aligning to reference genome, number of reads aligning to the spike-in genome and the ratio of the number of spike-in reads.
-2. Create BigWig files using sequencing depth scaling and using spike-in scaling.
-
----
-
-
 <h1>
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/nf-core-rnaseq_logo_dark.png">
