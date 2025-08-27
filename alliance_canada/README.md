@@ -39,7 +39,9 @@ cd rnaseq
 
 ```shell
 git clone https://github.com/BenMartinLab/nfcore-rnaseq
+cd nfcore-rnaseq
 git checkout <BRANCH>
+cd ..
 ```
 
 where `<BRANCH>` is the version of the pipeline you want to run, for example `3.19.0_spikein`. 
