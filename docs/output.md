@@ -37,6 +37,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
   - [Other steps](#other-steps)
     - [StringTie](#stringtie)
     - [BEDTools and bedGraphToBigWig](#bedtools-and-bedgraphtobigwig)
+    - [Scale factors](#scale-factors)
   - [Quality control](#quality-control)
     - [RSeQC](#rseqc)
       - [Infer experiment](#infer-experiment)
