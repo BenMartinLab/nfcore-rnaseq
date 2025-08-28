@@ -13,6 +13,9 @@
   * [Run the pipeline](#run-the-pipeline)
 * [Run the pipeline on Cedar](#run-the-pipeline-on-cedar)
   * [Alternative using the wait script](#alternative-using-the-wait-script)
+* [Output files](#output-files)
+  * [Standard output files](#standard-output-files)
+  * [Additional output files](#additional-output-files)
 
 ## Installation
 
@@ -232,3 +235,20 @@ nextflow run nfcore-rnaseq \
     --gtf <GTF> \
     --additional_fasta <SPIKEIN_FASTA>
 ```
+
+## Output files
+
+### Standard output files
+
+Most files are the same as the standard output from the [official RNA-seq pipeline from nf-core.re](https://nf-co.re/rnaseq). See [Output from RNA-seq official pipeline](https://nf-co.re/rnaseq/3.20.0/docs/output)
+
+### Additional output files
+
+- `<ALIGNER>/bigwig/`
+  - `*.depth_scaled.forward.bigWig`: bigWig coverage file relative to genes on the forward DNA strand scaled to sequencing depth.
+  - `*.depth_scaled.reverse.bigWig`: bigWig coverage file relative to genes on the reverse DNA strand scaled to sequencing depth.
+  - `*.spike_scaled.forward.bigWig`: bigWig coverage file relative to genes on the forward DNA strand scaled using spike-in genome.
+  - `*.spike_scaled.reverse.bigWig`: bigWig coverage file relative to genes on the reverse DNA strand scaled using spike-in genome.
+
+- `<ALIGNER>/`:
+  - `scale_factors.txt`: scale factors used when creating bigWig files.
