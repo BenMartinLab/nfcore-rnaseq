@@ -7,6 +7,7 @@
   * [Loading modules and setting variables](#loading-modules-and-setting-variables)
   * [Creating Python virtual environment](#creating-python-virtual-environment)
   * [Downloading required containers to run the pipeline](#downloading-required-containers-to-run-the-pipeline)
+* [Download genome](#download-genome)
 * [Run the pipeline on Rorqual or Narval](#run-the-pipeline-on-rorqual-or-narval)
   * [Create tmux session](#create-tmux-session)
   * [Loading modules and activating the Python virtual environment](#loading-modules-and-activating-the-python-virtual-environment)
@@ -100,6 +101,10 @@ nf-core pipelines download \
 ```
 
 where `<VERSION>` is the version of the pipeline you want to run, for example `3.19.0`.
+
+## Download genome
+
+Look at the [download genome README](download_genome.md)
 
 ## Run the pipeline on Rorqual or Narval
 
